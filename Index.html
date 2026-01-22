@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Web</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body {margin:0;padding:0;background:black;overflow:hidden;font-family:sans-serif;color:white;text-align:center;}
+
+.border-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 97%;
+    height: 98%;
+    pointer-events: none;
+    z-index: 1000; 
+    border: 12px solid;
+    border-image: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red) 1;
+    animation: borderPulse 6s linear infinite;
+}
+
+@keyframes borderPulse {
+    0% {
+        border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red);
+    }
+    100% {
+        border-image-source: linear-gradient(405deg, red, orange, yellow, green, blue, indigo, violet, red);
+    }
+}
+
+h1, p, .signature, .love-note {
+    opacity: 0; 
+    transition: opacity 2s ease-in-out; 
+    pointer-events: none; 
+    position: relative; 
+    z-index: 10;
+}
+
+h1 {font-size:3rem;margin-top:10vh;font-family:'Pacifico', cursive;}
+.gradient-text {background-image:repeating-linear-gradient(45deg,red,orange 10%,yellow 20%,green 30%,blue 40%,indigo 50%,violet 60%,red 70%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:stripedRainbow 6s linear infinite;}
+@keyframes stripedRainbow {0%{background-position:0% 0%;}100%{background-position:100% 100%;}}
+
+#main-title .emoji-reset {
+    -webkit-text-fill-color: initial; 
+    background-image: none; 
+    color: white; 
+    text-shadow: 0 0 5px white; 
+}
+
+p {
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.8;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 650px;
+    
+    background-image: linear-gradient(90deg, #00fffb, #00aaff, #00fffb); 
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: stripedRainbow 8s linear infinite; 
+    
+    text-shadow: 
+        0 0 7px #00fffb, 
+        0 0 15px #00aaff, 
+        0 0 25px #00aaff;
+}
+
+#message-body span {
+    -webkit-text-fill-color: initial; 
+    background-image: none; 
+    text-shadow: none; 
+}
+
+#star-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; 
+    background: transparent;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px white;
+    opacity: 0;
+    animation: twinkle 4s linear infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+#moon-image {
+    position: fixed; 
+    top: 30px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: 150px; 
+    height: 150px;
+    z-index: 10; 
+    pointer-events: none; 
+    filter: none; 
+    animation: gentleWobble 10s ease-in-out infinite alternate;
+}
+
+@keyframes gentleWobble {
+    0% { transform: translateX(-50%) translateY(0px) rotate(0deg); }
+    100% { transform: translateX(-50%) translateY(-5px) rotate(2deg); }
+}
+
+#heart-text {
+    position: fixed;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    z-index: 100; 
+    font-size: 2.5rem; 
+    font-family: 'Pacifico', cursive; 
+    pointer-events: none; 
+}
+
+.neon-blue {
+    color: #00fffb; 
+    text-shadow: 
+        0 0 5px #00fffb, 
+        0 0 10px #00aaff, 
+        0 0 15px #00aaff;
+}
+
+.red-heart {
+    color: red; 
+    text-shadow: 
+        0 0 3px red; 
+    margin: 0 5px; 
+    font-size: 1em; 
+}
+
+.signature {font-size:1.2rem;color:white;text-shadow:0 0 10px pink;animation:pulse 2s infinite;margin-top:20px;}
+@keyframes pulse {0%,100%{opacity:1;}50%{opacity:0.5;}}
+.love-note {font-size:1.1rem;color:white;animation:fadeIn 10s ease-in;margin-top:20px;}
+@keyframes fadeIn {0%{opacity:0;transform:translateY(30px);}100%{opacity:1;transform:translateY(0);}}
+
+/* Canvas styling */
+canvas {position:fixed;top:0;left:0;z-index:0; display: block;}
+
+#music-player {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -10;
+}
+
+#unmute-button {
+    background-color: #ff007f;
+    color: white;
+    padding: 30px 60px; 
+    border: 5px solid white; 
+    border-radius: 20px; 
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f, 0 0 50px #ffc0cb, inset 0 0 15px white;
+    position: fixed; 
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1); 
+    z-index: 10000; 
+    transition: all 0.3s ease; 
+    animation: attentionPulse 1.5s infinite alternate, neonGlow 2s infinite alternate;
+}
+
+#unmute-button:hover {
+    background-color: #ffc0cb; 
+    color: #333;
+    transform: translate(-50%, -50%) scale(1.15); 
+    animation: none; 
+    box-shadow: 0 0 50px rgba(255, 105, 180, 1.8);
+}
+
+@keyframes attentionPulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-50%, -50%) scale(1.05); } 
+}
+
+@keyframes neonGlow {
+    0% { border-color: white; box-shadow: 0 0 15px #ff007f, 0 0 30px #ffc0cb; }
+    100% { border-color: yellow; box-shadow: 0 0 30px yellow, 0 0 60px #ff007f; }
+}
+</style>
+</head>
+<body>
+<div class="border-animation"></div>
+
+<img id="moon-image" src="https://files.catbox.moe/gm5udi.png" alt="Magical Crescent Moon">
+<div id="star-bg"></div>
+
+<div id="heart-text">
+    <span class="neon-blue">W</span>
+    <span class="red-heart">❤️</span>
+    <span class="neon-blue">D</span>
+</div>
+<audio id="music-player" loop>
+    <source src="https://files.catbox.moe/l8t1cj.mp3" type="audio/mp3">
+</audio>
+<button id="unmute-button" onclick="unmuteMusic()">වත්සලා.පෝන් එකේ සද්දෙ පොඩ්ඩක් වැඩි කරලා<br>මේ රෝස පාට කොටුව ඔබන්නකො <br> පළවෙනියට🥰 (Click Me!)</button>
+
+<h1 id="main-title">
+    <span class="gradient-text">Wish your Happy magical Birthday Wathsala</span> 
+    <span class="emoji-reset">🎂</span>  
+</h1>
+<p id="message-body"> Happy birthday Wathsala<span>🎂</span><br>දන්නවද මට ඔයාව ගොඩාක් වටිනවා<span>🥺❤️</span><br>ඔයගෙ ලස්සන හිනාවට තමා මම ආසම<span>😍</span><br>ඉතින් මෝඩියේ කියන්න තියෙන්නෙ එක දෙයයි<span>☺️</span><br>මගෙ කෙල්ල හිනාවෙලා පරිස්සමින් ඉන්න<span>🥰💖</span>    <br>මං ඔයාට ගොඩ ගොඩාක් ආදරෙයි…<span>❤️✨</span></p>
+<div id="signature-text" class="signature">💌 “Dear Wathsala, every heartbeat of mine whispers your name...”</div>
+
+<div id="love-note-text" class="love-note">web site coder with by Tharindu Deshan🔥</div>
+
+<canvas id="animationCanvas"></canvas>
+
+<script>
+function unmuteMusic() {
+    const musicPlayer = document.getElementById('music-player');
+    
+    musicPlayer.play().catch(error => {
+        console.error("Audio playback failed:", error);
+    }); 
+    
+    document.getElementById('unmute-button').style.display = 'none';
+    
+    document.getElementById('main-title').style.opacity = '1';
+    document.getElementById('main-title').style.pointerEvents = 'auto';
+    
+    document.getElementById('message-body').style.opacity = '1';
+    document.getElementById('message-body').style.pointerEvents = 'auto';
+
+    document.getElementById('signature-text').style.opacity = '1';
+    document.getElementById('signature-text').style.pointerEvents = 'auto';
+    
+    document.getElementById('love-note-text').style.opacity = '1';
+    document.getElementById('love-note-text').style.pointerEvents = 'auto';
+}
+
+function createStars() {
+    const starContainer = document.getElementById('star-bg');
+    const totalStars = 400; 
+    
+    for (let i = 0; i < totalStars; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.left = `${Math.random() * 100}vw`;
+        
+        star.style.animationDelay = `${Math.random() * 4}s`; 
+        star.style.animationDuration = `${Math.random() * 2 + 3}s`; 
+        
+        starContainer.appendChild(star);
+    }
+}
+createStars(); 
+
+// --- ANIMATION LOGIC ---
+
+const canvas = document.getElementById("animationCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+// --- 1. Neon Blue (Cyan) Dots Setup (Updated Count & Speed) ---
+const dots = [];
+const dotCount = 24; // 2xsped (12 -> 24)
+for (let i = 0; i < dotCount; i++) {
+    dots.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        speed: Math.random() * 6 + 4, // වේගය දෙගුණ කළා (2~5 -> 4~10)
+        radius: Math.random() * 1.5 + 0.5 
+    });
+}
+
+// --- 2. Firework & Heart Particles Setup ---
+const neonColors = ['#ff00ff', '#00ffff', '#39ff14', '#ffff00', '#ff6600'];
+let particles = [];
+
+function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height / 2;
+    const count = 50;
+    const angleIncrement = (Math.PI * 2) / count;
+    const color = neonColors[Math.floor(Math.random() * neonColors.length)];
+    for (let i = 0; i < count; i++) {
+        const angle = i * angleIncrement;
+        const speed = Math.random() * 5 + 2;
+        particles.push({x, y, dx: Math.cos(angle) * speed, dy: Math.sin(angle) * speed, alpha: 1, color});
+    }
+}
+
+const heartParticles = [];
+const v = 32;
+const hPath = [];
+const M = Math;
+
+for (let i = 0; i < 6.3; i += 0.2) {
+    hPath.push([canvas.width / 2 + 180 * M.pow(M.sin(i), 3), canvas.height / 2 + 10 * (-(15 * M.cos(i) - 5 * M.cos(2 * i) - 2 * M.cos(3 * i) - M.cos(4 * i)))]);
+}
+for (let i = 0; i < v; i++) {
+    const f = [];
+    const x = M.random() * canvas.width;
+    const y = M.random() * canvas.height;
+    const H = i / v * 80 + 280;
+    const S = M.random() * 40 + 60;
+    const B = M.random() * 60 + 20;
+    for (let k = 0; k < v; k++) {
+        f[k] = {x, y, X: 0, Y: 0, R: (1 - k / v) + 1, S: M.random() + 1, q: ~~(M.random() * v), D: i % 2 * 2 - 1, F: M.random() * 0.2 + 0.7, f: `hsla(${~~H},${~~S}%,${~~B}%,.1)`};
+    }
+    heartParticles.push(f);
+}
+
+function renderParticle(p) {
+    ctx.fillStyle = p.color || p.f;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.R || 2, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function loop() {
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // --- Draw Neon Blue (Cyan) Dots ---
+    for (let i = 0; i < dots.length; i++) {
+        let dot = dots[i];
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#00ffff';
+        ctx.fillStyle = '#00ffff';
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        dot.y += dot.speed;
+        dot.x += dot.speed;
+
+        if (dot.y > canvas.height || dot.x > canvas.width) {
+            if (Math.random() > 0.5) {
+                dot.y = -10;
+                dot.x = Math.random() * canvas.width;
+            } else {
+                dot.x = -10;
+                dot.y = Math.random() * canvas.height;
+            }
+        }
+    }
+    ctx.shadowBlur = 0; 
+
+    // --- Draw Fireworks ---
+    particles.forEach((p, i) => {
+        p.x += p.dx;
+        p.y += p.dy;
+        p.alpha -= 0.02;
+        ctx.globalAlpha = p.alpha;
+        renderParticle(p);
+        if (p.alpha <= 0) particles.splice(i, 1);
+    });
+    ctx.globalAlpha = 1;
+
+    // --- Draw Floating Heart ---
+    for (let i = 0; i < v; i++) {
+        const f = heartParticles[i];
+        const u = f[0];
+        const q = hPath[u.q];
+        const D = u.x - q[0];
+        const E = u.y - q[1];
+        const G = M.sqrt(D * D + E * E);
+        if (G < 10) {
+            if (M.random() > 0.95) u.q = ~~(M.random() * v);
+            else {
+                if (M.random() > 0.99) u.D *= -1;
+                u.q += u.D;
+                u.q %= v;
+                if (u.q < 0) u.q += v;
+            }
+        }
+        u.X += -D / G * u.S;
+        u.Y += -E / G * u.S;
+        u.x += u.X;
+        u.y += u.Y;
+        renderParticle(u);
+        u.X *= u.F;
+        u.Y *= u.F;
+        for (let k = 0; k < v - 1; k++) {
+            const T = f[k], N = f[k + 1];
+            N.x -= (N.x - T.x) * 0.7;
+            N.y -= (N.y - T.y) * 0.7;
+            renderParticle(N);
+        }
+    }
+
+    requestAnimationFrame(loop);
+}
+
+setInterval(createFirework, 2000);
+loop();
+</script>
+</body>
+</html>
